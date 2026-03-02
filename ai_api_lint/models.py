@@ -42,3 +42,17 @@ class LintReport:
     findings: list[Finding] = field(default_factory=list)
     overall_score: float = 100.0
     grade: str = "Excellent"
+
+
+@dataclass
+class FixRecord:
+    rule_id: str
+    path: str
+    method: str
+    description: str
+
+
+@dataclass
+class FixResult:
+    applied: list[FixRecord] = field(default_factory=list)
+    skipped: list[FixRecord] = field(default_factory=list)
