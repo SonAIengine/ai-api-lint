@@ -6,6 +6,22 @@ authors = ["SonAIengine <sonsj97@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "ai_api_lint"}]
+keywords = ["openapi", "linter", "ai", "llm", "api", "tool-use", "mcp"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Quality Assurance",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[tool.poetry.urls]
+Homepage = "https://github.com/SonAIengine/ai-api-lint"
+Repository = "https://github.com/SonAIengine/ai-api-lint"
+"Bug Tracker" = "https://github.com/SonAIengine/ai-api-lint/issues"
 
 [tool.poetry.scripts]
 ai-api-lint = "ai_api_lint.cli:main"
