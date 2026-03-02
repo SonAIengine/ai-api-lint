@@ -1,0 +1,138 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Bad API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/getUsers": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "response"
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "post": {
+        "operationId": "x",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/users/{userId}/orders/{orderId}/items/{itemId}/details": {
+      "get": {
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/data": {
+      "put": {
+        "operationId": "update!!!data",
+        "summary": "PUT data",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/process/run": {
+      "post": {
+        "operationId": "class",
+        "summary": "Run process",
+        "parameters": [
+          {"name": "p1", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p2", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p3", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p4", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p5", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p6", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p7", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p8", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p9", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p10", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p11", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p12", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p13", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p14", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p15", "in": "query", "required": true, "schema": {"type": "string"}},
+          {"name": "p16", "in": "query", "required": true, "schema": {"type": "string"}}
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/items": {
+      "get": {
+        "operationId": "x",
+        "summary": "Get items",
+        "tags": ["items"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {"type": "object"}
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    }
+  }
+}
