@@ -4,7 +4,7 @@ import json
 import os
 from collections import defaultdict
 
-from ai_api_lint.models import Finding, LintReport, Severity
+from ai_api_lint.models import Finding, FixResult, LintReport, Severity
 
 # ANSI escape codes
 _BOLD = "\033[1m"
@@ -30,7 +30,7 @@ def _ansi(code: str) -> str:
     return code if _use_color() else ""
 
 
-def format_terminal(report: LintReport) -> str:
+def format_terminal(report: LintReport, fix_result: FixResult | None = None) -> str:
     """Format a LintReport for terminal output with ANSI colors."""
     lines: list[str] = []
 
@@ -88,6 +88,27 @@ def format_terminal(report: LintReport) -> str:
         f"{finding_detail}"
     )
 
+    if fix_result is not None:
+        lines.append("")
+        lines.append(
+            f" {_ansi(_BOLD)}Fix Results:{_ansi(_RESET)} "
+            f"{len(fix_result.applied)} applied, {len(fix_result.skipped)} skipped"
+        )
+        for record in fix_result.skipped[:5]:
+            reason = record.reason or "Skipped without a recorded reason."
+            lines.append(f"  - {record.rule_id} {record.method.upper()} {record.path}: {reason}")
+        remaining = len(fix_result.skipped) - 5
+        if remaining > 0:
+            lines.append(f"  - ... {remaining} more skipped")
+        if fix_result.diff_preview:
+            diff_lines = fix_result.diff_preview.splitlines()
+            preview = "\n".join(diff_lines[:20])
+            lines.append("")
+            lines.append(f" {_ansi(_BOLD)}Dry-Run Diff Preview:{_ansi(_RESET)}")
+            lines.append(preview)
+            if len(diff_lines) > 20:
+                lines.append(f" ... {len(diff_lines) - 20} more diff lines")
+
     return "\n".join(lines)
 
 
@@ -106,7 +127,21 @@ def _finding_to_dict(f: Finding) -> dict:
     return d
 
 
-def format_json(report: LintReport) -> str:
+def _fix_record_to_dict(record: dict) -> dict:
+    if hasattr(record, "reason"):
+        data = {
+            "rule_id": record.rule_id,
+            "path": record.path,
+            "method": record.method,
+            "description": record.description,
+        }
+        if record.reason is not None:
+            data["reason"] = record.reason
+        return data
+    return record
+
+
+def format_json(report: LintReport, fix_result: FixResult | None = None) -> str:
     """Serialize a LintReport to formatted JSON."""
     data = {
         "spec_path": report.spec_path,
@@ -115,4 +150,11 @@ def format_json(report: LintReport) -> str:
         "overall_score": report.overall_score,
         "grade": report.grade,
     }
+    if fix_result is not None:
+        data["fix_result"] = {
+            "applied": [_fix_record_to_dict(r) for r in fix_result.applied],
+            "skipped": [_fix_record_to_dict(r) for r in fix_result.skipped],
+        }
+        if fix_result.diff_preview is not None:
+            data["fix_result"]["diff_preview"] = fix_result.diff_preview
     return json.dumps(data, indent=2)

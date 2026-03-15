@@ -126,8 +126,30 @@ class TestDryRun:
         engine = FixEngine(create_default_fixers())
         result = engine.fix(spec, findings, dry_run=True)
         assert len(result.applied) == 1
+        assert result.diff_preview is not None
+        assert '"400": {' in result.diff_preview
         # Original spec should NOT be modified
         assert spec == original
+
+
+class TestSkipReasons:
+    def test_records_reason_when_no_change_needed(self) -> None:
+        spec = _minimal_spec()
+        spec["paths"]["/items"]["get"]["responses"]["404"] = {"description": "Not Found"}
+        findings = [
+            Finding(
+                rule_id="AI042",
+                severity=Severity.WARNING,
+                message="No 4xx client error response defined.",
+                path="/items",
+                method="get",
+            )
+        ]
+
+        result = FixEngine(create_default_fixers()).fix(spec, findings)
+
+        assert len(result.skipped) == 1
+        assert result.skipped[0].reason == "No changes were needed for the current spec state."
 
 
 class TestFixEngineIntegration:

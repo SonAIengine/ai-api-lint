@@ -34,10 +34,12 @@ def _resolve_pointer(spec: dict, pointer: str) -> dict | list | str | None:
     return current
 
 
-def resolve_refs(spec: dict, _visiting: set | None = None) -> dict:
+def resolve_refs(spec: dict, _visiting: set | None = None, _root: dict | None = None) -> dict:
     """Resolve $ref references in-place (internal JSON pointer only)."""
     if _visiting is None:
         _visiting = set()
+    if _root is None:
+        _root = spec
 
     if isinstance(spec, dict):
         if "$ref" in spec and isinstance(spec["$ref"], str):
@@ -46,24 +48,24 @@ def resolve_refs(spec: dict, _visiting: set | None = None) -> dict:
                 # Circular reference — skip
                 return spec
             _visiting.add(ref)
-            resolved = _resolve_pointer(spec, ref)
+            resolved = _resolve_pointer(_root, ref)
             if isinstance(resolved, dict):
                 # Replace the $ref dict contents with resolved value
                 spec.clear()
                 spec.update(resolved)
-                resolve_refs(spec, _visiting)
+                resolve_refs(spec, _visiting, _root)
             _visiting.discard(ref)
         else:
             for value in spec.values():
                 if isinstance(value, dict):
-                    resolve_refs(value, _visiting)
+                    resolve_refs(value, _visiting, _root)
                 elif isinstance(value, list):
                     for item in value:
                         if isinstance(item, dict):
-                            resolve_refs(item, _visiting)
+                            resolve_refs(item, _visiting, _root)
     elif isinstance(spec, list):
         for item in spec:
             if isinstance(item, dict):
-                resolve_refs(item, _visiting)
+                resolve_refs(item, _visiting, _root)
 
     return spec

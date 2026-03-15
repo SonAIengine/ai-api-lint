@@ -92,15 +92,11 @@ def main() -> None:
         html = generate_html_report(report, fix_result=fix_result)
         output = html
     elif args.output_format == "json":
-        output = format_json(report)
+        output = format_json(report, fix_result=fix_result)
     else:
-        output = format_terminal(report)
-        if fix_result and fix_result.applied:
-            output += f"\n\n  Fix: {len(fix_result.applied)} applied"
-            if fix_result.skipped:
-                output += f", {len(fix_result.skipped)} skipped"
-            if args.dry_run:
-                output += " (dry-run, no changes)"
+        output = format_terminal(report, fix_result=fix_result)
+        if fix_result and args.dry_run:
+            output += "\n  Dry-run only, no changes written"
 
     # Write or print output
     if args.output and not (args.output.endswith(".json") and args.fix and not args.dry_run):

@@ -59,7 +59,6 @@ class AI041_SuccessResponseNoSchema(Rule):
                         suggestion=f"Add a schema to response '{code}'.",
                     )
                 ]
-            return []
         return []
 
 

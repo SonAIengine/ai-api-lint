@@ -59,13 +59,23 @@ class TestHtmlReportWithFix:
                 FixRecord(rule_id="AI042", path="/items", method="get", description="Add 400"),
             ],
             skipped=[
-                FixRecord(rule_id="AI034", path="/items", method="post", description="Skipped"),
+                FixRecord(
+                    rule_id="AI034",
+                    path="/items",
+                    method="post",
+                    description="Skipped",
+                    reason="No changes were needed for the current spec state.",
+                ),
             ],
+            diff_preview='--- before\n+++ after\n+  "400": {}',
         )
         html = generate_html_report(report, fix_result=fix_result)
         assert "Fix Results" in html
         assert "Applied" in html
         assert "Skipped" in html
+        assert "No changes were needed" in html
+        assert "Dry-Run Diff Preview" in html
+        assert "--- before" in html
 
 
 class TestHtmlReportNoFindings:

@@ -139,6 +139,27 @@ def generate_html_report(
     # Fix result section
     fix_html = ""
     if fix_result is not None:
+        skipped_html = ""
+        if fix_result.skipped:
+            skipped_items = ""
+            for record in fix_result.skipped[:10]:
+                reason = _esc(record.reason or "Skipped without a recorded reason.")
+                skipped_items += (
+                    f'<div class="fix-item">'
+                    f'<span class="fix-rule">{_esc(record.rule_id)}</span>'
+                    f'<span class="fix-target">{_esc(record.method.upper())} {_esc(record.path)}</span>'
+                    f'<span class="fix-reason">{reason}</span>'
+                    f"</div>"
+                )
+            skipped_html = f'<div class="fix-details"><h3>Skipped Details</h3>{skipped_items}</div>'
+        diff_html = ""
+        if fix_result.diff_preview:
+            diff_html = (
+                '<div class="fix-details">'
+                "<h3>Dry-Run Diff Preview</h3>"
+                f'<pre class="fix-diff">{_esc(fix_result.diff_preview)}</pre>'
+                "</div>"
+            )
         fix_html = (
             '<div class="section fix-section">'
             "<h2>Fix Results</h2>"
@@ -150,6 +171,8 @@ def generate_html_report(
             f'<span class="fix-num">{len(fix_result.skipped)}</span>'
             f'<span class="fix-label">Skipped</span></div>'
             f"</div>"
+            f"{skipped_html}"
+            f"{diff_html}"
             "</div>"
         )
 
@@ -236,6 +259,23 @@ h2 {{ font-size: 1.1rem; margin-bottom: .75rem; color: var(--muted); font-weight
 .fix-stat.applied .fix-num {{ color: #22c55e; }}
 .fix-stat.skipped .fix-num {{ color: var(--muted); }}
 .fix-label {{ font-size: .85rem; color: var(--muted); }}
+.fix-details {{ margin-top: 1.25rem; text-align: left; }}
+.fix-details h3 {{ font-size: .95rem; margin-bottom: .75rem; color: var(--muted); }}
+.fix-item {{
+  display: grid; grid-template-columns: 60px 1fr 2fr; gap: .75rem;
+  padding: .45rem 0; border-top: 1px solid var(--border); font-size: .85rem;
+}}
+.fix-rule {{ font-family: monospace; font-weight: 600; }}
+.fix-target {{ font-family: monospace; }}
+.fix-reason {{ color: var(--muted); }}
+.fix-diff {{
+  margin-top: .5rem; padding: .75rem; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; overflow-x: auto; font-size: .8rem; line-height: 1.4; white-space: pre-wrap;
+  text-align: left; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}}
+@media (max-width: 640px) {{
+  .fix-item {{ grid-template-columns: 1fr; gap: .2rem; }}
+}}
 @media print {{
   body {{ max-width: 100%; }}
   .op-section {{ break-inside: avoid; }}

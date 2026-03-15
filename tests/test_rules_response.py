@@ -60,6 +60,24 @@ class TestAI041:
         findings = rule.check(_ctx(op))
         assert len(findings) == 0
 
+    def test_checks_all_success_responses(self):
+        rule = AI041_SuccessResponseNoSchema()
+        op = {
+            "responses": {
+                "200": {
+                    "description": "OK",
+                    "content": {"application/json": {"schema": {"type": "object"}}},
+                },
+                "201": {
+                    "description": "Created",
+                    "content": {"application/json": {}},
+                },
+            }
+        }
+        findings = rule.check(_ctx(op))
+        assert len(findings) == 1
+        assert "201" in findings[0].message
+
 
 class TestAI042:
     def test_no_4xx(self):

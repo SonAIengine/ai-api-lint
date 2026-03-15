@@ -50,9 +50,11 @@ class FixRecord:
     path: str
     method: str
     description: str
+    reason: str | None = None
 
 
 @dataclass
 class FixResult:
     applied: list[FixRecord] = field(default_factory=list)
     skipped: list[FixRecord] = field(default_factory=list)
+    diff_preview: str | None = None
